@@ -6,7 +6,7 @@
 #include "Tools.h"
 #include "def.h"
 
-int TimeReadInterval = 1;  // read sensor once in two seconds
+int TimeReadInterval = 1;  // read sensor every second
 unsigned long TimeReadLastTime = millis();
 
 #if PRODUCTION
@@ -15,6 +15,8 @@ int SensorsReadInterval = 60;  // read sensor once in minute
 int SensorsReadInterval = 2;  // read sensor once in 2 seconds
 #endif
 unsigned long SensorsReadLastTime = millis();
+
+bool buttonIsPressed = false;
 
 void setup() {
     Serial.begin(115200);
@@ -28,6 +30,8 @@ void setup() {
     while (!Serial1) {
         ;
     }
+
+    pinMode(BUTTON_PIN, INPUT);
 
     AppI2C::initiate();
     DEBUG_PRINTLN("AppI2C initiated");
@@ -114,5 +118,15 @@ void loop() {
         AppSerial::sendFrame(&uptimeFrame);
 
         SensorsReadLastTime = millis();
+    }
+
+    bool buttonPressedNow = digitalRead(BUTTON_PIN) == HIGH;
+    if (buttonPressedNow && !buttonIsPressed) {
+        buttonIsPressed = true;
+    } else if (!buttonPressedNow && buttonIsPressed) {
+        buttonIsPressed = false;
+        Serial.println("button");
+        SerialFrame buttonFrame = SerialFrame("btn", "1");
+        AppSerial::sendFrame(&buttonFrame);
     }
 }

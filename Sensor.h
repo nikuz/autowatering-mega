@@ -9,10 +9,6 @@ public:
 
     ~Sensor();
 
-    static void initiate();
-
-    static void read();
-
     static char *getSoilMoisture(int sensorId);
 };
 

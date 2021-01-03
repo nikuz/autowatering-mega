@@ -22,7 +22,6 @@ public:
 
     static bool parseSerialCommand(const char *command, const char *param);
 
-private:
     static bool on(const char *name);
 
     static bool off(const char *name);
